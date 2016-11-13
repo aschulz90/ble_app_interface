@@ -1,6 +1,7 @@
 var MagicMirrorBleService = require('../ble_service/MagicMirrorBleService.js');
 var zlib = require('zlib');
 var path = require("path");
+var app = require("./../../js/app.js");
 
 class AppInterfaceBleService extends MagicMirrorBleService {
 	
@@ -13,9 +14,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 		
 		var bleCharacteristics = [];
 		
-		var configFilename = path.resolve(__dirname + "/../../config/config.js");
-		console.log("Read config from: " + configFilename)
-		var config = require(configFilename);
+		var config = app.configInterface.getConfig();
 		var moduleMap = {};
 		var characteristicUuid = "ff00";
 		
@@ -41,7 +40,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 					}
 					
 					if(!offset) {
-						console.log("Read config: " + this.value.toString());
+						console.log("Read config: " + JSON.stringify(JSON.parse(this.value.toString()), null, '\t'));
 						callback(this.RESULT_SUCCESS, this.value);
 					}
 					else {
@@ -51,8 +50,8 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 				
 				onWriteRequest: function(data, offset, withoutResponse, callback) {
 					console.log('AppInterfaceBleService - WriteCharacteristic write request: ' + data + ' ' + offset + ' ' + withoutResponse);
+					app.configInterface.replaceModuleConfig(this._index, data.toString());
 					this.value = data;
-					self.sendSocketNotification("APP_INTERFACE_CONFIG_CHANGE", this.value);
 					callback(this.RESULT_SUCCESS);
 				},
 
@@ -65,6 +64,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 			});
 			
 			characteristic._module = module;
+			characteristic._index = i;
 			bleCharacteristics.push(characteristic);
 			
 			characteristicUuid = new Number(parseInt(characteristicUuid, 16) + 1).toString(16);

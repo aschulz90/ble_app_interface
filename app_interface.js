@@ -31,7 +31,6 @@ Module.register("app_interface",{
 		
 		console.log("Received notification: " + notification + " (" + JSON.stringify(payload) + ")");
 		
-		
 		this.updateDom();
 	},
 
