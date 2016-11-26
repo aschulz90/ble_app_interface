@@ -22,7 +22,7 @@ Module.register("app_interface",{
 	notificationReceived: function(notification, payload, sender) {
 		
 		if (notification === "DOM_OBJECTS_CREATED") {
-			this.sendNotification("BLE_SERVICE_ADD", "../app_interface/AppInterfaceBleService.js", this);
+			this.sendNotification("BLE_SERVICE_ADD", "../app_interface/AppInterfaceBleService.js");
 		}
 	},
 	
