@@ -7,6 +7,8 @@
 
 Module.register("app_interface",{
 
+	connectedDeviceName : "",
+
 	// Module config defaults.
 	defaults: {
 		showInfo : false
@@ -21,15 +23,19 @@ Module.register("app_interface",{
 	
 	notificationReceived: function(notification, payload, sender) {
 		
-		if (notification === "DOM_OBJECTS_CREATED") {
-			this.sendNotification("BLE_SERVICE_ADD", "../app_interface/AppInterfaceBleService.js");
-		}
 	},
 	
 	// Override socket notification handler.
 	socketNotificationReceived: function(notification, payload) {
 		
 		console.log("Received notification: " + notification + " (" + JSON.stringify(payload) + ")");
+		
+		if(notification === "DEVICE_CONNECTED") {
+			this.connectedDeviceName = payload;
+		}
+		else if(notification === "DEVICE_DISCONNECTED") {
+			this.connectedDeviceName = "";
+		}
 		
 		this.updateDom();
 	},
@@ -43,6 +49,12 @@ Module.register("app_interface",{
 			
 			var message = document.createTextNode("App Interface");
 			wrapper.appendChild(message);
+			wrapper.appendChild(document.createElement("br"));
+			
+			var status = document.createTextNode("Connected Bluetooth Device: " + (this.connectedDeviceName ? this.connectedDeviceName : "None"));
+			wrapper.appendChild(status);
+			
+			wrapper.className = "small normal";
 		}
 
 		return wrapper;

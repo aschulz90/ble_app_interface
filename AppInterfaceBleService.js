@@ -1,26 +1,23 @@
-var MagicMirrorBleService = require('../ble_service/MagicMirrorBleService.js');
+var MagicMirrorBleService = require('./MagicMirrorBleService.js');
 var zlib = require('zlib');
 var path = require("path");
 var app = require("./../../js/app.js");
 
-function getInstalledModules(callback ) {
-	var srcdir = __dirname + "/../../";
-	fs.readdir(srcdir, function(err, names) {
-		if (err) {
-			console.error("Error reading dir " + srcdir + ": " + err);
-			return;
-		}
-		
-		var moduleList = names.filter(function(name) {
-			return fs.statSync(path.join(srcdir, name)).isDirectory() && name != "node_modules";
-		});
-		
-		console.log("Installed modules: " + moduleList);
-		
-		if(typeof callback === "function") {
-			callback(moduleList);
-		}
+function getInstalledModules() {
+	var srcdir = __dirname + "/../";
+	var fs = require('fs');
+	
+	var names = fs.readdirSync(srcdir);
+	var modules = {};
+	
+	modules.custom = names.filter(function(name) {
+		return fs.statSync(path.join(srcdir, name)).isDirectory() && name != "default" && name != "node_modules";
 	});
+	
+	modules.default = require("./../default/defaultmodules.js");
+	
+	console.log("Installed modules: " + JSON.stringify(modules,null,'\t'));
+	return modules;
 }
 
 class AppInterfaceBleService extends MagicMirrorBleService {
@@ -34,9 +31,8 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 		
 		var bleCharacteristics = [];
 		
-		var config = app.configInterface.getConfig();
+		var config = app.persistentConfigInterface.getConfig();
 		var moduleList = [];
-		var characteristicUuid = "ff00";
 		
 		for (var i = 0; i < config.modules.length; i++) {
 			var module = config.modules[i];
@@ -53,7 +49,6 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 			"onReadRequest": function(offset, callback) {
 				
 				console.log("AppInterfaceBleService - Characteristic 38cd read request: " + offset);
-				getInstalledModules();
 				
 				this.value = new Buffer(JSON.stringify(moduleList));
 				
@@ -77,7 +72,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 				else {
 					if(parameter[0] === "REPLACE" && !isNaN(new Number(parameter[1]))) {
 						
-						app.configInterface.replaceModuleConfig(new Number(parameter[1]), parameter[2]);
+						app.persistentConfigInterface.replaceModuleConfig(new Number(parameter[1]), parameter[2]);
 						
 						callback(this.RESULT_SUCCESS);
 						return;
@@ -86,7 +81,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 						
 						var index = new Number(parameter[1]);
 						
-						app.configInterface.removeModuleConfig(index);
+						app.persistentConfigInterface.removeModuleConfig(index);
 						moduleList.splice(index, 1);
 						config.modules.splice(index, 1);
 						
@@ -159,12 +154,28 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 
 			"uuid": "40cd",
 
-			"properties" : ['write'],
+			"properties" : ['write', 'read'],
+			
+			"onReadRequest": function(offset, callback) {
+				
+				console.log("AppInterfaceBleService - Characteristic 40cd read request: " + offset);
+				
+				if(!offset) {
+					this.value = new Buffer(JSON.stringify(getInstalledModules()));
+					console.log("Read default module list: " + this.value.toString());
+					callback(this.RESULT_SUCCESS, this.value);
+				}
+				else {
+					callback(this.RESULT_SUCCESS, this.value.slice(offset));
+				}
+			},
 			
 			"onWriteRequest": function(data, offset, withoutResponse, callback) {
-				console.log('AppInterfaceBleService - WriteCharacteristic write request: ' + data + ' ' + offset + ' ' + withoutResponse);
-				app.configInterface.addModuleConfig(data.toString());
-				this.value = data;
+				console.log('AppInterfaceBleService - Characteristic 40cd write request: ' + data + ' ' + offset + ' ' + withoutResponse);
+				app.persistentConfigInterface.addModuleConfig(data.toString());
+				var module = JSON.parse(data.toString());
+				config.modules.push(module);
+				moduleList.push(module.module);
 				callback(this.RESULT_SUCCESS);
 			},
 
