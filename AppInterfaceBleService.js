@@ -2,6 +2,7 @@ var MagicMirrorBleService = require('./MagicMirrorBleService.js');
 var zlib = require('zlib');
 var path = require("path");
 var app = require("./../../js/app.js");
+var exec = require("child_process").exec;
 
 function getInstalledModules() {
 	var srcdir = __dirname + "/../";
@@ -187,10 +188,88 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 			]	
 		}));
 		
+		bleCharacteristics.push(new MagicMirrorBleService.Characteristic({
+			"value": undefined,
+
+			"uuid": "41cd",
+
+			"properties" : ['write'],
+			
+			"onWriteRequest": function(data, offset, withoutResponse, callback) {
+				console.log("Execute query: " + data.toString());
+				if(self.executeQuery(data.toString(), ble_helper)) {
+					callback(this.RESULT_SUCCESS);
+				}
+				else {
+					callback(this.RESULT_UNLIKELY_ERROR);
+				}
+			},
+
+			"descriptors": [
+				new MagicMirrorBleService.Descriptor({
+					"uuid": '2901',
+					"value": 'Add modules'
+				})
+			]	
+		}));
+		
 		this.setOptions({
 			"uuid": '280F',
 			"characteristics": bleCharacteristics
 		});
+	}
+	
+	//*** copied from MMM-Remote-Control
+	executeQuery(query) {
+		var opts = {timeout: 8000};
+		
+		function checkForExecError(error, stdout, stderr) {
+			console.log(stdout);
+			console.log(stderr);
+			if (error) {
+				console.log(error);
+			}
+		}
+		
+		if (query === "SHUTDOWN")
+		{
+			console.log("SHUTDOWN");
+			exec("sudo shutdown -h now", opts, function(error, stdout, stderr){ checkForExecError(error, stdout, stderr); });
+			return true;
+		}
+		else if (query === "REBOOT")
+		{
+			console.log("REBOOT");
+			exec("sudo shutdown -r now", opts, function(error, stdout, stderr){ checkForExecError(error, stdout, stderr); });
+			return true;
+		}
+		else if (query === "RESTART")
+		{
+			console.log("RESTART");
+			exec("pm2 restart mm", opts, function(error, stdout, stderr){
+				this.sendSocketNotification("RESTART");
+				checkForExecError(error, stdout, stderr);
+			});
+			return true;
+		}
+		else if (query === "REFRESH")
+		{
+			console.log("REFRESH");
+			this.sendSocketNotification("REFRESH");
+			return true;
+		}
+		else if (query === "MONITORON")
+		{
+			console.log("MONITORON");
+			exec("tvservice --preferred && sudo chvt 6 && sudo chvt 7", opts, function(error, stdout, stderr){ checkForExecError(error, stdout, stderr); });
+			return true;
+		}
+		else if (query === "MONITOROFF")
+		{
+			console.log("MONITOROFF");
+			exec("tvservice -o", opts, function(error, stdout, stderr){ checkForExecError(error, stdout, stderr); });
+			return true;
+		}
 	}
 }
 

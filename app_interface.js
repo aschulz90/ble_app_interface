@@ -36,6 +36,15 @@ Module.register("app_interface",{
 		else if(notification === "DEVICE_DISCONNECTED") {
 			this.connectedDeviceName = "";
 		}
+		// copied from MMM-Remote-Control
+		else if (notification === "REFRESH" ) {
+            document.location.reload();
+		}
+		else if (notification === "RESTART") {
+			setTimeout(function() {
+				document.location.reload(); console.log('Delayed REFRESH');
+			}, 60000);
+		}
 		
 		this.updateDom();
 	},
