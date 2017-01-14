@@ -21,6 +21,36 @@ function getInstalledModules() {
 	return modules;
 }
 
+function getMirrorSettings() {
+	var config = app.persistentConfigInterface.getConfig();
+	var settings = {};
+	if(config.port) {
+		settings.port = config.port;
+	}
+	if(config.address) {
+		settings.address = config.address;
+	}
+	if(config.ipWhitelist) {
+		settings.ipWhitelist = config.ipWhitelist;
+	}
+	if(config.zoom) {
+		settings.zoom = config.zoom;
+	}
+	if(config.language) {
+		settings.language = config.language;
+	}
+	if(config.timeFormat) {
+		settings.timeFormat = config.timeFormat;
+	}
+	if(config.units) {
+		settings.units = config.units;
+	}
+	if(config.electronOptions) {
+		settings.electronOptions = config.electronOptions;
+	}
+	return settings;
+}
+
 class AppInterfaceBleService extends MagicMirrorBleService {
 	
 	constructor(ble_helper) {
@@ -97,7 +127,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 			"descriptors": [
 				new MagicMirrorBleService.Descriptor({
 					"uuid": '2901',
-					"value": 'Read the current modules and their values.'
+					"value": 'Read the current module list and remove and add modules.'
 				})
 			]
 		}));
@@ -193,6 +223,42 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 
 			"uuid": "41cd",
 
+			"properties" : ['write', 'read'],
+			
+			"onReadRequest": function(offset, callback) {
+				
+				console.log("AppInterfaceBleService - Characteristic 41cd read request: " + offset);
+				
+				if(!offset) {
+					var settings = getMirrorSettings();
+					this.value = new Buffer(JSON.stringify(settings));
+					console.log("Read magic mirror settings: " + this.value.toString());
+					callback(this.RESULT_SUCCESS, this.value);
+				}
+				else {
+					callback(this.RESULT_SUCCESS, this.value.slice(offset));
+				}
+			},
+			
+			"onWriteRequest": function(data, offset, withoutResponse, callback) {
+				console.log('AppInterfaceBleService - Characteristic 40cd write request: ' + data + ' ' + offset + ' ' + withoutResponse);
+				app.persistentConfigInterface.replaceConfigValues(data.toString());
+				callback(this.RESULT_SUCCESS);
+			},
+
+			"descriptors": [
+				new MagicMirrorBleService.Descriptor({
+					"uuid": '2901',
+					"value": 'Add modules'
+				})
+			]	
+		}));
+		
+		bleCharacteristics.push(new MagicMirrorBleService.Characteristic({
+			"value": undefined,
+
+			"uuid": "42cd",
+
 			"properties" : ['write'],
 			
 			"onWriteRequest": function(data, offset, withoutResponse, callback) {
@@ -208,7 +274,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 			"descriptors": [
 				new MagicMirrorBleService.Descriptor({
 					"uuid": '2901',
-					"value": 'Add modules'
+					"value": 'Execute Queries'
 				})
 			]	
 		}));
