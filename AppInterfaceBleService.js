@@ -166,6 +166,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 					callback(this.RESULT_UNLIKELY_ERROR);
 				}
 				else {
+					var config = app.persistentConfigInterface.getConfig();
 					console.log("Set Value to " + JSON.stringify(config.modules[index], null,'\t'));
 					this.value = new Buffer(JSON.stringify(config.modules[index]));
 					callback(this.RESULT_SUCCESS);
