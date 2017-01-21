@@ -105,6 +105,19 @@ Write | Writing to this characteristic executes the written command. <br><br>**A
 
 ### Raspberry Pi Wifi Settings
 
+#### Service
+
 UUID | Description
 ------------ | -----------
 0000210F-0000-1000-8000-00805f9b34fb | Contains a characteristic for getting nearby wifi networks and connecting to one.
+
+#### Characteristic
+
+UUID | Description
+---- | -----------
+000041cd-0000-1000-8000-00805f9b34fb | Allows to read nearby wifi networks and connect to one.
+
+Operation | Usage
+--- | ---
+Read | Reading this characteristic returns a list of neabry wifi networks and the currently connected one in JSON. <br><br> **Example**:<br> `"{"ssid":"bla","address":"XY:12:34:56"}"`
+Write | Writing to this characteristic allows to permanently connect to a wifi network. <br><br>**Example**<br> `"{"ssid":"bla", "passphrase":"123456"}"` connects the Raspberry Pi to the network `bla` and uses the passphase `123456`
