@@ -20,7 +20,7 @@ If you get an errormessage similiar to this one: `Module version mismatch. Expec
 To do this:
 
 1. cd into `MagicMirror/modules/ble_app_interface/node_modules/bleno`
-2. run `npm rebuild --runtime=electron --target=USED_ELECTRON_VERSION --disturl=https://atom.io/download/atom-shell --abi=XX`, where USED_ELECTRON_VERSION is currently `1.4.7` and `XX` is the expected Node version number.
+2. run `npm rebuild --runtime=electron --target=USED_ELECTRON_VERSION --disturl=https://atom.io/download/atom-shell --abi=XX`, where `USED_ELECTRON_VERSION` is currently `1.4.7` and `XX` is the expected Node version number.
 
 ## Usage
 
