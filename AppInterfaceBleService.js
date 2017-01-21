@@ -81,11 +81,13 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 				
 				console.log("AppInterfaceBleService - Characteristic 38cd read request: " + offset);
 				
-				this.value = new Buffer(JSON.stringify(moduleList));
-				
 				if(!offset) {
-					console.log("Read module list: " + JSON.stringify(JSON.parse(this.value.toString()), null, '\t'));
-					callback(this.RESULT_SUCCESS, this.value);
+					console.log("Read module list: " + JSON.stringify(moduleList, null, '\t'));
+					// compress, because BLE only allows 512 byte per Read, and then callback
+					zlib.gzip(new Buffer(JSON.stringify(moduleList)), function (_, result) {
+						this.value = result;
+						callback(this.RESULT_SUCCESS, this.value);
+					}.bind(this));
 				}
 				else {
 					callback(this.RESULT_SUCCESS, this.value.slice(offset));
@@ -168,8 +170,11 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 				else {
 					var config = app.persistentConfigInterface.getConfig();
 					console.log("Set Value to " + JSON.stringify(config.modules[index], null,'\t'));
-					this.value = new Buffer(JSON.stringify(config.modules[index]));
-					callback(this.RESULT_SUCCESS);
+					// compress, because BLE only allows 512 byte per Read, and then callback
+					zlib.gzip(new Buffer(JSON.stringify(config.modules[index])), function (_, result) {
+						this.value = result;
+						callback(this.RESULT_SUCCESS);
+					}.bind(this));
 				}
 			},
 
@@ -193,9 +198,12 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 				console.log("AppInterfaceBleService - Characteristic 40cd read request: " + offset);
 				
 				if(!offset) {
-					this.value = new Buffer(JSON.stringify(getInstalledModules()));
-					console.log("Read default module list: " + this.value.toString());
-					callback(this.RESULT_SUCCESS, this.value);
+					console.log("Read default module list: " + JSON.stringify(getInstalledModules(),null,'\t'));
+					// compress, because BLE only allows 512 byte per Read, and then callback
+					zlib.gzip(new Buffer(JSON.stringify(getInstalledModules())), function (_, result) {
+						this.value = result;
+						callback(this.RESULT_SUCCESS, this.value);
+					}.bind(this));
 				}
 				else {
 					callback(this.RESULT_SUCCESS, this.value.slice(offset));
@@ -232,9 +240,12 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 				
 				if(!offset) {
 					var settings = getMirrorSettings();
-					this.value = new Buffer(JSON.stringify(settings));
-					console.log("Read magic mirror settings: " + this.value.toString());
-					callback(this.RESULT_SUCCESS, this.value);
+					console.log("Read magic mirror settings: " + JSON.stringify(settings,null,'\t'));
+					// compress, because BLE only allows 512 byte per Read, and then callback
+					zlib.gzip(new Buffer(JSON.stringify(settings)), function (_, result) {
+						this.value = result;
+						callback(this.RESULT_SUCCESS, this.value);
+					}.bind(this));
 				}
 				else {
 					callback(this.RESULT_SUCCESS, this.value.slice(offset));

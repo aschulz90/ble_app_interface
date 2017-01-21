@@ -89,7 +89,7 @@ class WifiReadCharacteristic extends MagicMirrorBleService.Characteristic{
 		
 		this.value.availableNetworks = networks;
 		
-		// compress, because BLE only allows 512 byte per Read and then callback
+		// compress, because BLE only allows 512 byte per Read, and then callback
 		zlib.gzip(new Buffer(JSON.stringify(this.value)), function (_, result) {
 			this.value = result;
 			this.pendingCallback(this.RESULT_SUCCESS, this.value);
