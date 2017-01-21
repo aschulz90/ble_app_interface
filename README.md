@@ -1,6 +1,6 @@
 # ble_app_interface
 
-This is a [MagicMirror](https://github.com/MichMich/MagicMirror) module for making persistent changes to MagicMirrors config file.
+This is a [MagicMirror](https://github.com/MichMich/MagicMirror) module for advertising Ble-Services to modify certain aspects of the MagicMirror. Any Ble-capable device (smartphone, Raspberry Pi, etc) can connect to it and communicate with.
 
 ##Video:
 
