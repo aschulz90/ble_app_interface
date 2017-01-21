@@ -57,7 +57,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 		
 		super(ble_helper);
 		
-		this.module_name = 'app_interface';
+		this.module_name = 'ble_app_interface';
 		var self = this;
 		
 		var bleCharacteristics = [];

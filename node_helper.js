@@ -1,5 +1,5 @@
 /* Magic Mirror
- * Module: app_interface
+ * Module: ble_app_interface
  *
  * By Andreas Schulz https://github.com/aschulz90
  * MIT Licensed.
@@ -56,7 +56,7 @@ module.exports = NodeHelper.create({
   
 	socketNotificationReceived: function(notification, payload) {
 		if(notification === "INIT") {
-			console.log('Notification INIT in app_interface received');
+			console.log('Notification INIT in ble_app_interface received');
 			return;
 		}
     }

@@ -1,11 +1,11 @@
 /* Magic Mirror
- * Module: app_interface
+ * Module: ble_app_interface
  *
  * By Andreas Schulz https://github.com/aschulz90
  * MIT Licensed.
  */
 
-Module.register("app_interface",{
+Module.register("ble_app_interface",{
 
 	connectedDeviceName : "",
 

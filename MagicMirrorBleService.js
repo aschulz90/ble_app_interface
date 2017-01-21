@@ -8,7 +8,7 @@ class MagicMirrorBleService extends bleno.PrimaryService {
 		super({});
 		console.log("Creating MagicMirrorBleService with: " + ble_helper);
 		this.service_node_helper = ble_helper;
-		this.module_name = 'app_interface';
+		this.module_name = 'ble_app_interface';
 	}
 	
 	setOptions(options) {
