@@ -16,7 +16,7 @@ App can be found here: https://github.com/aschulz90/MagicMirrorApp
 4. Install [persistent_config_interface](https://github.com/aschulz90/persistent_config_interface)
 5. Run MagicMirror with sudo or configure your Rapsberry Pi according to [Bleno without root](https://github.com/sandeepmistry/bleno#running-without-rootsudo) (some functionality of the module requries root, but that is optional)
 
-If you get an errormessage similiar to this one: `Module version mismatch. Expected 48, got 47.`, you need to rebuild bleno, because Electron is build on another version.
+If you get an errormessage similiar to this one: `Module version mismatch. Expected 48, got 47.`, you need to rebuild bleno, because Electron is build against another Node version.
 To do this:
 
 1. cd into `MagicMirror/modules/ble_app_interface/node_modules/bleno`
