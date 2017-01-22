@@ -1,10 +1,10 @@
 {
-	"name": "app_interface",
+	"name": "ble_app_interface",
 	"version": "1.0.0",
 	"description": "Allow other applications to modify certain aspects of the MagicMirror via BLE.",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/aschulz90/app_interface"
+		"url": "git+https://github.com/aschulz90/ble_app_interface"
 	},
 	"keywords": [
 		"magic mirror",
@@ -15,12 +15,12 @@
 		"bluetooth low energy"
 	],
 	"author": "Andreas Schulz",
-	"contributors": "https://github.com/aschulz90/app_interface/graphs/contributors",
+	"contributors": "https://github.com/aschulz90/ble_app_interface/graphs/contributors",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/aschulz90/app_interface/issues"
+		"url": "https://github.com/aschulz90/ble_app_interface/issues"
 	},
-	"homepage": "https://github.com/aschulz90/app_interface#readme",
+	"homepage": "https://github.com/aschulz90/ble_app_interface#readme",
 	"dependencies": {
 		"bleno": "latest",
 		"wireless-tools": "latest"
