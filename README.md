@@ -41,7 +41,9 @@ Add this to your `config.js`
 
 ## Ble-Services
 
-There two BLE-services published: one for configuring the MagicMirror and one for configuring the wifi settings of the Raspberry Pi. The UUIDs of these services and their characteristics can be found below. 
+The name of the BLE-device, that you need to connect to is `MagicMirror`.
+
+Two BLE-services are published: one for configuring the MagicMirror and one for configuring the wifi settings of the Raspberry Pi. The UUIDs of these services and their characteristics can be found below. 
 
 **The Read-Operations of the characteristics GZIPs every response before returning it. So you need to decompress the response on the client, after reading a characteristic!**
 
