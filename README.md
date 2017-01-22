@@ -41,6 +41,10 @@ Add this to your `config.js`
 
 ## Ble-Services
 
+There two BLE-services published: one for configuring the MagicMirror and one for configuring the wifi settings of the Raspberry Pi. The UUIDs of these services and their characteristics can be found below. 
+
+**The Read-Operations of the characteristics GZIPs every response before returning it. So you need to decompress the response on the client, after reading a characteristic!**
+
 ### General MagicMirror Interface
 
 #### Service
@@ -75,7 +79,7 @@ Write | Writing to this characteristic sets the index of the module, that gets r
 
 UUID | Description
 ---- | -----------
-000040cd-0000-1000-8000-00805f9b34fb | Allows to read the installed module list and add new modules to the config.
+000040cd-0000-1000-8000-00805f9b34fb | Allows to read the installed modules list and add new modules to the config.
 
 Operation | Usage
 --- | ---
