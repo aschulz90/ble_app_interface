@@ -13,8 +13,9 @@ App can be found here: https://github.com/aschulz90/MagicMirrorApp
 1. Navigate into your MagicMirror's `modules` folder.
 2. Clone repository with `git clone https://github.com/aschulz90/ble_app_interface.git`.
 3. Run `npm install`
-4. Install [persistent_config_interface](https://github.com/aschulz90/persistent_config_interface)
-5. Run MagicMirror with sudo or configure your Rapsberry Pi according to [Bleno without root](https://github.com/sandeepmistry/bleno#running-without-rootsudo) (some functionality of the module requries root, but that is optional)
+4. Run `sudo systemctl stop bluetooth` and `sudo systemctl disable bluetooth`
+5. Install [persistent_config_interface](https://github.com/aschulz90/persistent_config_interface)
+6. Run MagicMirror with sudo or configure your Rapsberry Pi according to [Bleno without root](https://github.com/sandeepmistry/bleno#running-without-rootsudo) (some functionality of the module requries root, but that is optional)
 
 If you get an errormessage similiar to this one: `Module version mismatch. Expected 48, got 47.`, you need to rebuild bleno, because Electron is build against another Node version.
 To do this:
