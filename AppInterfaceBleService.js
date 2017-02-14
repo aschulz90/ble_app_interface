@@ -1,8 +1,9 @@
-var MagicMirrorBleService = require('./MagicMirrorBleService.js');
-var zlib = require('zlib');
-var path = require("path");
-var app = require("./../../js/app.js");
-var exec = require("child_process").exec;
+const MagicMirrorBleService = require('./MagicMirrorBleService.js');
+const zlib = require('zlib');
+const path = require("path");
+const app = require("./../../js/app.js");
+const exec = require("child_process").exec;
+const simpleGit = require("simple-git");
 
 function getInstalledModules() {
 	var srcdir = __dirname + "/../";
@@ -19,6 +20,29 @@ function getInstalledModules() {
 	
 	console.log("Installed modules: " + JSON.stringify(modules,null,'\t'));
 	return modules;
+}
+
+function installModule(url, callback) {
+	var self = this;
+
+	simpleGit(path.resolve(__dirname + "/..")).clone(url, path.basename(url), function(error, result) {
+		if (error) {
+			console.log(error);
+			callback(error);
+		} else {
+			var workDir = path.resolve(__dirname + "/../" + path.basename(url));
+			exec("npm install", {cwd: workDir, timeout: 120000}, function(error, stdout, stderr)
+			{
+				if (error) {
+					console.log(error);
+					callback(error);
+				} else {
+					// success part
+					callback();
+				}
+			});
+		}
+	});
 }
 
 function getMirrorSettings() {
@@ -261,7 +285,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 			"descriptors": [
 				new MagicMirrorBleService.Descriptor({
 					"uuid": '2901',
-					"value": 'Add modules'
+					"value": 'Change MM config values'
 				})
 			]	
 		}));
@@ -275,7 +299,7 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 			
 			"onWriteRequest": function(data, offset, withoutResponse, callback) {
 				console.log("Execute query: " + data.toString());
-				if(self.executeQuery(data.toString(), ble_helper)) {
+				if(self.executeQuery(data.toString())) {
 					callback(this.RESULT_SUCCESS);
 				}
 				else {
@@ -287,6 +311,28 @@ class AppInterfaceBleService extends MagicMirrorBleService {
 				new MagicMirrorBleService.Descriptor({
 					"uuid": '2901',
 					"value": 'Execute Queries'
+				})
+			]	
+		}));
+		
+		bleCharacteristics.push(new MagicMirrorBleService.Characteristic({
+			"value": undefined,
+
+			"uuid": "43cd",
+
+			"properties" : ['write'],
+			
+			"onWriteRequest": function(data, offset, withoutResponse, callback) {
+				console.log("Install module: " + data.toString());
+				installModule(data.toString(), function(error) {
+					callback(error ? this.RESULT_UNLIKELY_ERROR : this.RESULT_SUCCESS);
+				}.bind(this));
+			},
+
+			"descriptors": [
+				new MagicMirrorBleService.Descriptor({
+					"uuid": '2901',
+					"value": 'Install modules'
 				})
 			]	
 		}));
